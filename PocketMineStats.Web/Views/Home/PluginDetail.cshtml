@@ -1,0 +1,58 @@
+﻿@{
+    ViewData["Title"] = "Plugin: " + Model.Name;
+}
+
+@using Newtonsoft.Json
+@model PocketMineStats.Models.PluginDetailViewModel
+
+<div id="page-content-wrapper">
+    <div class="content-header">
+        <h1>
+            <a id="menu-toggle" href="#" class="btn btn-default"><i class="fa fa-reorder"></i></a><i class="fa fa-list-alt"></i> Plugins
+        </h1>
+    </div>
+
+    <div class="page-content inset">
+        <h1 class="text-center">@Model.Name: @Model.TotalCount servers use this plugin with @Model.VersionCount versions</h1>
+        <div class="row" id="pluginGraph"></div>
+    </div>
+</div>
+
+<script>
+    $(function() {
+        $("#pluginGraph").highcharts({
+            chart: {
+                plotBackgroundColor: null,
+                plotBorderWidth: null,
+                plotShadow: false
+            },
+            title: {
+                text: @Html.Raw(@JsonConvert.SerializeObject(Model.EscapedName))    + ' Versions'
+            },
+            tooltip: {
+                pointFormat: '{series.name}: <b>{point.percentage:.1f}%</b>'
+            },
+            plotOptions: {
+                pie: {
+                    allowPointSelect: true,
+                    cursor: 'pointer',
+                    dataLabels: {
+                        enabled: true,
+                        format: '<b>{point.name}</b>: {point.percentage:.1f} %',
+                        style: {
+                            color: (Highcharts.theme && Highcharts.theme.contrastTextColor) || 'black'
+                        }
+                    }
+                }
+            },
+            credits: {
+                enabled: false
+            },
+            series: [{
+                type: 'pie',
+                name: @Html.Raw(@JsonConvert.SerializeObject(Model.EscapedName)) + " Version",
+                data: JSON.parse(@Html.Raw(@JsonConvert.SerializeObject(Model.Versions)))
+            }]
+        });
+    });
+</script>

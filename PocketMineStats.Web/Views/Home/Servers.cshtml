@@ -1,0 +1,178 @@
+﻿@{
+    ViewData["Title"] = "Servers";
+}
+<div id="page-content-wrapper">
+    <div class="content-header">
+        <h1>
+            <a id="menu-toggle" href="#" class="btn btn-default"><i class="fa fa-reorder"></i></a><i class="fa fa-server"></i> Servers
+        </h1>
+    </div>
+
+    <div class="page-content inset">
+        <a href="#globalchart">
+            <div class="row">
+                <div id="globalchart">
+                </div>
+            </div>
+        </a>
+        <hr>
+        <div class="row">
+            <div class="col-md-6" id="left">
+                <a href="#php_versions">
+                    <div id="php_versions">
+                    </div>
+                </a>
+                <br>
+                <a href="#sysarchs">
+                    <div id="sysarchs">
+                    </div>
+                </a>
+            </div>
+            <div class="col-md-6" id="right">
+                <a href="#operatingsystems">
+                    <div id="operatingsystems">
+                    </div>
+                </a>
+                <br>
+                <a href="#syscores">
+                    <div id="syscores">
+                    </div>
+                </a>
+            </div>
+        </div>
+        <hr>
+        <a href="#sysreleases">
+            <div class="row" id="sysreleases">
+            </div>
+        </a>
+        <hr>
+        <a href="#locations">
+            <div class="row" id="locations">
+            </div>
+        </a>
+        <hr>
+        <div class="row">
+            <a href="#gameversions">
+                <div class="col-md-6" id="gameversions">
+                </div>
+            </a>
+            <a href="#serverversions">
+                <div class="col-md-6" id="serverversions"> 
+                </div>
+            </a>
+        </div>
+        <hr>
+        <a href="#map">
+            <div class="row" id="map">
+            </div>
+        </a>
+        <hr>
+    </div>
+<script>
+        $(function() {
+            renderGlobalStats()
+            
+            function createPieChart(querySelector, title, seriesName, data) {
+                $(querySelector).highcharts({
+                    chart: {
+                        plotBackgroundColor: null,
+                        plotBorderWidth: null,
+                        plotShadow: false
+                    },
+                    title: {
+                        text: title
+                    },
+                    tooltip: {
+                        pointFormat: '{series.name}: <b>{point.percentage:.1f}%</b>'
+                    },
+                    plotOptions: {
+                        pie: {
+                            allowPointSelect: true,
+                            cursor: 'pointer',
+                            dataLabels: {
+                                enabled: true,
+                                format: '<b>{point.name}</b>: {point.percentage:.1f} %',
+                                style: {
+                                    color: (Highcharts.theme && Highcharts.theme.contrastTextColor) || 'black'
+                                }
+                            }
+                        }
+                    },
+                    credits: {
+                        enabled: false
+                    },
+                    series: [{
+                        type: 'pie',
+                        name: seriesName,
+                        data: data
+                    }]
+                });
+            }
+            $.getJSON("@Url.Action("ServerStats", "Home")", function(json) {
+                maplocations = [];
+                const locations = json["locations"];
+                if (locations != null) {
+                    locations.forEach(function(data, elem) {
+                        maplocations.push({
+                            code: data[0],
+                            value: data[1],
+                            name: getCountryName(data[0])
+                        });
+                    });
+                }
+
+                createPieChart('#php_versions', 'PHP Versions', 'PHP Version', json["phpVersions"]);
+                createPieChart('#operatingsystems', 'Operating Systems', 'OS', json["operatingSystems"]);
+                createPieChart('#sysarchs', 'System Architecture', 'Arch', json["platforms"]);
+                createPieChart('#syscores', 'System Cores', 'Cores', json["cores"]);
+                createPieChart('#gameversions', 'Game Versions', 'Game Version', json["gameVersions"]);
+                createPieChart('#locations', 'Locations', 'Location', json["locations"]);
+                createPieChart('#sysreleases', 'System Releases', 'System Releases', json["releases"]);
+                createPieChart('#serverversions', 'Server Versions', 'Server Version', json["serverVersions"]);
+
+                $('#map').highcharts('Map', {
+
+                    title: {
+                        text: 'Locations'
+                    },
+
+                    mapNavigation: {
+                        enabled: true,
+                        enableDoubleClickZoomTo: true
+                    },
+
+                    colorAxis: {
+                        min: 1,
+                        max: 1000,
+                        type: 'logarithmic'
+                    },
+                    credits: {
+                        enabled: false
+                    },
+                    series: [{
+                        type: "map",
+                        data: maplocations,
+                        mapData: Highcharts.maps['custom/world'],
+                        joinBy: ['iso-a2', 'code'],
+                        name: 'Servers',
+                        states: {
+                            hover: {
+                                color: '#BADA55'
+                            }
+                        },
+                        tooltip: {
+                            valueSuffix: ' servers'
+                        }
+                    }]
+                });
+                setTimeout(function() {
+                    if (window.location.hash != "") {
+                        if ($(window.location.hash).get(0) != undefined) {
+                            $(window.location.hash).get(0).scrollIntoView();
+                        }
+                    }
+                }, 1000);
+            });
+        });
+    </script>
+</div>

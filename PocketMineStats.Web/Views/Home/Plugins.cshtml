@@ -1,0 +1,56 @@
+﻿@{
+    ViewData["Title"] = "Plugins";
+}
+@model PocketMineStats.Models.PluginViewModel
+@using PocketMineStats.Extensions
+
+<div id="page-content-wrapper">
+    <div class="content-header">
+        <h1>
+            <a id="menu-toggle" href="#" class="btn btn-default"><i class="fa fa-reorder"></i></a><i class="fa fa-list-alt"></i> Plugins
+        </h1>
+    </div>
+
+    <div class="page-content inset">
+        <div class="row" id="tableinit">
+            <h2>Search for a plugin:</h2>
+            <input class="search" placeholder="Search"/>
+            <br>
+            <br>
+            <div class="table-responsive text-center">
+                <table class="table table-bordered table-hover">
+                    <thead>
+                    <tr>
+                        <th>Rank</th>
+                        <th>Plugin</th>
+                        <th>Versions</th>
+                        <th>Servers</th>
+                    </tr>
+                    </thead>
+                    <tbody id="tablebody" class="list">
+                    @foreach (var (item, index) in Model.Plugins.WithIndex())
+                    {
+                        <tr>
+                            <th scope="row" class="rank">@(index + 1)</th>
+                            <td class="plugin">
+                                @Html.ActionLink(item.Name, "PluginDetail", "Home", new { id = item.Name }, null)
+                            </td>
+                            <td class="versions">@item.Versions.Count</td>
+                            <td class="servers">@item.TotalCount</td>
+                        </tr>
+                    }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>                    
+    //Initialize table search
+    new List('tableinit', {
+        valueNames: ['rank', 'plugin', 'versions', 'servers'],
+        page: 100000
+    });
+</script>
+

@@ -1,0 +1,129 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="">
+    <meta name="author" content="">
+    <link rel="shortcut icon" href="~/favicon.ico">
+
+    <title>@ViewData["Title"] - PocketMine Stats</title>
+    
+    @Html.Raw(JavaScriptSnippet.FullScript)
+
+    <link href="//maxcdn.bootstrapcdn.com/bootswatch/3.3.4/sandstone/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="//ajax.googleapis.com/ajax/libs/jqueryui/1.11.2/themes/smoothness/jquery-ui.css" />
+    <link href="//maxcdn.bootstrapcdn.com/font-awesome/4.3.0/css/font-awesome.min.css" rel="stylesheet">
+    <link href="~/main.css" rel="stylesheet">
+    <script src="//ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
+    <script src="//ajax.googleapis.com/ajax/libs/jqueryui/1.11.2/jquery-ui.min.js"></script>
+    <script src="//maxcdn.bootstrapcdn.com/bootstrap/3.2.0/js/bootstrap.min.js"></script>
+    <script src="//code.highcharts.com/stock/highstock.js"></script>
+    <script src="//code.highcharts.com/modules/exporting.js"></script>
+    <script src="//code.highcharts.com/maps/modules/map.js"></script>
+    <script src="//code.highcharts.com/mapdata/custom/world.js"></script>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/list.js/1.1.1/list.min.js"></script>
+    <script src="~/main.js"></script>
+</head>
+
+<body>
+<div id="wrapper">
+    <div id="sidebar-wrapper">
+        <ul class="sidebar-nav pull-right">
+            <li class="sidebar-brand clearfix">
+                <img src="~/favicon.ico" width="32" class="pull-left img-responsive" style="margin-left: 15px; margin-top: 15px;" />
+                <a href="~/"> PocketMine Stats</a>
+            </li>
+            <li>
+                <a href="~/"><i class="fa fa-home"></i> Home</a>
+            </li>
+            <li>
+                <a href="@Url.Action("Plugins", "Home")"><i class="fa fa-list-alt"></i> Plugins</a>
+            </li>
+            <li>
+                <a href="@Url.Action("Servers", "Home")"><i class="fa fa-server"></i> Servers</a>
+            </li>
+        </ul>
+    </div>
+    @RenderBody()
+</div>
+<script>
+function renderGlobalStats() {
+    $.getJSON('@Url.Action("GlobalStats", "Home")', function(json) {
+        y1 = [];
+        y2 = [];
+        for (var key in json) {
+            y1.push([parseInt(key), parseInt(json[key]["playerCount"])]);
+            y2.push([parseInt(key), parseInt(json[key]["serverCount"])]);
+        }
+        $('#globalchart').highcharts("StockChart", {
+            chart: {
+                type: "area"
+            },
+            rangeSelector: {
+                buttons: [{
+                    type: 'hour',
+                    count: 2,
+                    text: '2h'
+                }, {
+                    type: 'hour',
+                    count: 12,
+                    text: '12h'
+                }, {
+                    type: 'day',
+                    count: 1,
+                    text: '1d'
+                }, {
+                    type: 'week',
+                    count: 1,
+                    text: '1w'
+                }, {
+                    type: 'week',
+                    count: 2,
+                    text: '2w'
+                }, {
+                    type: 'all',
+                    text: 'All'
+                }]
+            },
+            title: {
+                text: 'Global PocketMine Statistics'
+            },
+            subtitle: {
+                text: 'Servers and Players by Time'
+            },
+            xAxis: {
+                type: 'datetime',
+                title: {
+                    text: 'Time'
+                }
+            },
+            yAxis: [{
+                title: {
+                    text: 'Amount'
+                },
+                min: 0
+            }],
+            tooltip: {
+                shared: true,
+                crosshairs: true,
+                pointFormat: '<span style="color:{point.color}">\u25CF</span> {series.name}: <b>{point.y:,.0f}</b><br/>'
+            },
+            credits: {
+                enabled: false
+            },
+            series: [{
+                name: "Players",
+                data: y1
+            }, {
+                name: "Servers",
+                data: y2
+            }]
+        });
+    });
+}
+</script>
+</body>
+
+</html>
