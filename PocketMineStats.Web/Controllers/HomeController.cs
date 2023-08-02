@@ -86,6 +86,11 @@ public class HomeController : Controller
             .OrderByDescending(x => x.Date)
             .FirstOrDefaultAsync();
 
+        if (data == null)
+        {
+            return Ok(new ServerStatsResponse());
+        }
+
         data.PhpVersions = data.PhpVersions?.ToDictionary(x => Escape(x.Key), x => x.Value);
         data.OperatingSystems = data.OperatingSystems?.ToDictionary(x => Escape(x.Key), x => x.Value);
         data.Platforms = data.Platforms?.ToDictionary(x => Escape(x.Key), x => x.Value);
@@ -94,16 +99,16 @@ public class HomeController : Controller
         data.Locations = data.Locations?.ToDictionary(x => Escape(x.Key), x => x.Value);
         data.ServerVersions = data.ServerVersions?.ToDictionary(x => Escape(x.Key), x => x.Value);
 
-        var data2 = new
+        var data2 = new ServerStatsResponse
         {
-            phpVersions = data.PhpVersions?.Select(x => new object[] { x.Key, x.Value }),
-            operatingSystems = data.OperatingSystems?.Select(x => new object[] { x.Key, x.Value }),
-            platforms = data.Platforms?.Select(x => new object[] { x.Key, x.Value }),
-            cores = data.Cores?.Select(x => new object[] { x.Key, x.Value }),
-            releases = data.Releases?.Select(x => new object[] { x.Key, x.Value }),
-            gameVersions = data.GameVersions?.Select(x => new object[] { x.Key, x.Value }),
-            locations = data.Locations?.Select(x => new object[] { x.Key, x.Value }),
-            serverVersions = data.ServerVersions?.Select(x => new object[] { x.Key, x.Value }),
+            PhpVersions = data.PhpVersions?.Select(x => new object[] { x.Key, x.Value }),
+            OperatingSystems = data.OperatingSystems?.Select(x => new object[] { x.Key, x.Value }),
+            Platforms = data.Platforms?.Select(x => new object[] { x.Key, x.Value }),
+            Cores = data.Cores?.Select(x => new object[] { x.Key, x.Value }),
+            Releases = data.Releases?.Select(x => new object[] { x.Key, x.Value }),
+            GameVersions = data.GameVersions?.Select(x => new object[] { x.Key, x.Value }),
+            Locations = data.Locations?.Select(x => new object[] { x.Key, x.Value }),
+            ServerVersions = data.ServerVersions?.Select(x => new object[] { x.Key, x.Value }),
         };
 
         return Ok(data2);
