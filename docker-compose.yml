@@ -1,0 +1,31 @@
+version: '3'
+services:
+    stats:
+      build: .
+      image: stats-web
+      ports:
+        - "127.0.0.1:5040:80"
+      environment:
+        - ConnectionStrings__StatsContext=server=${MYSQL_HOST};user id=${MYSQL_USER};password=${MYSQL_PASSWORD};database=${MYSQL_DATABASE}
+        # Don't expose MySQL root password
+        - MYSQL_ROOT_PASSWORD=''
+      env_file:
+        - .env
+      restart: unless-stopped
+      depends_on:
+        - mariadb
+    mariadb:
+        build: db/
+        image: stats-mariadb
+        environment:
+            #Unset MYSQL_HOST to allow MySQL to start
+            #https://github.com/docker-library/mysql/issues/82#issuecomment-230292558
+            MYSQL_HOST: ''
+        env_file:
+            - .env
+        volumes:
+            - mariadb:/var/lib/mysql
+        restart: unless-stopped
+
+volumes:
+    mariadb:
