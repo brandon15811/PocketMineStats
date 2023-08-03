@@ -22,6 +22,9 @@ public class UpdateStatsService
 
         if (!await statsContext.ServerInfo.AnyAsync())
         {
+            statsContext.PlayerCountHistory.Add(new PlayerCountHistory { Date = DateTimeOffset.Now });
+            statsContext.ServerTotals.Add(new ServerTotals { Date = DateTimeOffset.Now });
+            await statsContext.SaveChangesAsync();
             return;
         }
             
