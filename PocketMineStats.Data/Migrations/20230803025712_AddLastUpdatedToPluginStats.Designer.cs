@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using PocketMineStats.Data;
 
@@ -10,9 +11,11 @@ using PocketMineStats.Data;
 namespace PocketMineStats.Data.Migrations
 {
     [DbContext(typeof(StatsContext))]
-    partial class StatsContextModelSnapshot : ModelSnapshot
+    [Migration("20230803025712_AddLastUpdatedToPluginStats")]
+    partial class AddLastUpdatedToPluginStats
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder

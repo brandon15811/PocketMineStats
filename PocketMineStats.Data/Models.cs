@@ -10,6 +10,7 @@ public class PluginStats
     public string Name { get; set; }
     public string Version { get; set; }
     public int Count { get; set; }
+    public DateTimeOffset LastUpdated { get; set; }
 }
 
 public class PlayerCountHistory

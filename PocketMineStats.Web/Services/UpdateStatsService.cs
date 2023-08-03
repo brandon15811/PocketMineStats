@@ -17,8 +17,8 @@ public class UpdateStatsService
         using var scope = _serviceProvider.CreateScope();
         var statsContext = scope.ServiceProvider.GetRequiredService<StatsContext>();
             
-        var tenMinutesAgo = DateTimeOffset.Now.AddMinutes(-15);
-        await statsContext.ServerInfo.Where(x => x.LastRequest < tenMinutesAgo).ExecuteDeleteAsync();
+        var timeout = DateTimeOffset.Now.AddMinutes(-15);
+        await statsContext.ServerInfo.Where(x => x.LastRequest < timeout).ExecuteDeleteAsync();
 
         if (!await statsContext.ServerInfo.AnyAsync())
         {
@@ -89,8 +89,11 @@ public class UpdateStatsService
             {
                 statsContext.PluginStats.Add(plugin);
             }
+            plugin.LastUpdated = DateTimeOffset.Now;
         }
 
         await statsContext.SaveChangesAsync();
+        
+        await statsContext.PluginStats.Where(x => x.LastUpdated < timeout).ExecuteDeleteAsync();
     }
 }
